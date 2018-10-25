@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace count_words
@@ -85,6 +86,21 @@ namespace count_words
                 i += words1[i].CountNotLem - 1;
 
             }
+            //Parallel.For(0, words1.Count(), i =>
+            //{
+            //    List<int> wordPos = new List<int>();
+            //    List<string> str = new List<string>();
+            //    for (var j = i; j - i <= words1[i].CountNotLem - 1; j++)
+            //    {
+            //        str.Add(words1[j].Words);
+            //    }
+            //    wordPos = StringHelper.GetIndexForKeyWord(text, str);
+            //    if (wordPos.Count > 1)
+            //    {
+            //        words.Add(new Word(words1[i].Words, wordPos, wordPos.Count));
+            //    }
+            //    i += words1[i].CountNotLem - 1;
+            //});
             words.Sort((a, b) => a.Count.CompareTo(b.Count));
 
             label6.Text = words.Count().ToString();

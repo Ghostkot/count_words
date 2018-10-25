@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace count_words
 {
@@ -13,11 +14,11 @@ namespace count_words
         static public List<Word> EqualWords(string[] str)
         {
             ILemmatizer lmtz = new LemmatizerPrebuiltCompact(LemmaSharp.LanguagePrebuilt.Russian);
-            var words = (from s in str
+            var words = (from s in str.AsParallel()
                          where s.Length > 2
                          group s by lmtz.Lemmatize(s.ToLower()) into d
                          let count = d.Count()
-                         select new
+                         select new 
                          {
                              num = count,
                              word = d.GroupBy(p => p.ToLower()).Where(p => count > 1),
@@ -43,12 +44,11 @@ namespace count_words
             List<int> indexForKeyWord = new List<int>();
 
 
-            var results = key.Select(x =>
+            var results = key.AsParallel().Select(x =>
                  new
                  {
                      word = x,
-                     indexes = Regex.Matches(content, @"\b" + x + @"\b", RegexOptions.IgnoreCase)
-                       .Cast<Match>().Select(y => y.Index)
+                     indexes = Regex.Matches(content, @"\b" + x + @"\b", RegexOptions.IgnoreCase).Cast<Match>().Select(y => y.Index)
                        .ToList()
                  });
             foreach (var match in results)
@@ -58,6 +58,13 @@ namespace count_words
                     indexForKeyWord.Add(index);
                 }
             }
+            //Parallel.ForEach(results, (match) =>
+            //{
+            //    foreach (int index in match.indexes)
+            //    {
+            //        indexForKeyWord.Add(index);
+            //    }
+            //});
             indexForKeyWord.Sort();
             for (var i = indexForKeyWord.Count - 1; i > 0; i--)
             {
@@ -71,11 +78,23 @@ namespace count_words
                     }
                 }
             }
+            //Parallel.For(indexForKeyWord.Count - 1, 0, i =>
+            //{
+            //    if (indexForKeyWord[i] - indexForKeyWord[i - 1] > 2000)
+            //    {
+            //        if (i != 1) indexForKeyWord.Remove(indexForKeyWord[i]);
+            //        else
+            //        {
+            //            indexForKeyWord.Remove(indexForKeyWord[1]);
+            //            indexForKeyWord.Remove(indexForKeyWord[0]);
+            //        }
+            //    }
+            //});
             return indexForKeyWord;
         }
         static public int UniqWords(string[] str)
         {
-            var words = (from s in str
+            var words = (from s in str.AsParallel()
                          group s by s.ToLower() into d
                          select d);
             return words.Count();
