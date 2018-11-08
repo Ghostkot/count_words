@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -27,6 +28,7 @@ namespace count_words
             richTextBox1.Clear();
             label2.Text = "0";
             progressBar2.Value = 0;
+            progressBar1.Value = 0;
             label5.Text = "0";
             label6.Text = "0";
             label8.Text = "0";
@@ -52,7 +54,8 @@ namespace count_words
         private void button4_Click(object sender, EventArgs e)
         {
             var text = richTextBox1.Text;
-            string[] st = text.Split(new char[] { '\n', ',', ':', ' ', '.', '?', '"', '—', '*', '«', '»', '…', '-', '(', ')', '{', '}', '=' }, StringSplitOptions.RemoveEmptyEntries);
+            char x = Convert.ToChar(092);
+            string[] st = text.Split(new char[] { '\n', ',', ':', ' ', '.', '?', '"', '—', '*', '«', '»', '…', '-', '(', ')', '{', '}', '=', '/', x }, StringSplitOptions.RemoveEmptyEntries);
             float cw = st.Count();
             label2.Text = cw.ToString();
             words = StringHelper.EqualWords(st);
@@ -69,7 +72,9 @@ namespace count_words
                 words1.Add((Word)y.Clone());
             }
             words.Clear();
-
+            progressBar1.Maximum = words1.Count();
+            progressBar1.Value = 0;
+            
             for (var i = 0; i < words1.Count(); i++)
             {
                 List<int> wordPos = new List<int>();
@@ -81,26 +86,12 @@ namespace count_words
                 wordPos = StringHelper.GetIndexForKeyWord(text, str);
                 if (wordPos.Count > 1)
                 {
-                    words.Add(new Word(words1[i].Words, wordPos, wordPos.Count));
+                        words.Add(new Word(words1[i].Words, wordPos, wordPos.Count));
                 }
                 i += words1[i].CountNotLem - 1;
+                progressBar1.Value = i;
 
             }
-            //Parallel.For(0, words1.Count(), i =>
-            //{
-            //    List<int> wordPos = new List<int>();
-            //    List<string> str = new List<string>();
-            //    for (var j = i; j - i <= words1[i].CountNotLem - 1; j++)
-            //    {
-            //        str.Add(words1[j].Words);
-            //    }
-            //    wordPos = StringHelper.GetIndexForKeyWord(text, str);
-            //    if (wordPos.Count > 1)
-            //    {
-            //        words.Add(new Word(words1[i].Words, wordPos, wordPos.Count));
-            //    }
-            //    i += words1[i].CountNotLem - 1;
-            //});
             words.Sort((a, b) => a.Count.CompareTo(b.Count));
 
             label6.Text = words.Count().ToString();
