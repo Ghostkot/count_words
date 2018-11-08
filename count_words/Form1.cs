@@ -32,6 +32,7 @@ namespace count_words
             label5.Text = "0";
             label6.Text = "0";
             label8.Text = "0";
+            label9.Text = "";
             listView2.Items.Clear();
         }
 
@@ -53,6 +54,8 @@ namespace count_words
 
         private void button4_Click(object sender, EventArgs e)
         {
+            label9.ForeColor = Color.Red;
+            label9.Text = "Выполняется...";
             var text = richTextBox1.Text;
             char x = Convert.ToChar(092);
             string[] st = text.Split(new char[] { '\n', ',', ':', ' ', '.', '?', '"', '—', '*', '«', '»', '…', '-', '(', ')', '{', '}', '=', '/', x }, StringSplitOptions.RemoveEmptyEntries);
@@ -101,7 +104,13 @@ namespace count_words
                 lvi.SubItems.Add(words[i].Count.ToString());
                 listView2.Items.Add(lvi);
             }
+            
+            label9.Text = "";
+            label9.ForeColor = Color.Green;
+            label9.Text = "Завершено";
+            progressBar1.Value = 0;
 
         }
+        
     }
 }
